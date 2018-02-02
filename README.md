@@ -23,7 +23,7 @@ Include the script file.
 ### Module
 
 ```html
-import VueGrid from 'vue-grid';
+import VueGrid from 'wa-vue-grid';
 ```
 
 ## Usage
