@@ -1,14 +1,19 @@
 {
-  "name": "vue-grid",
+  "name": "wa-vue-grid",
   "version": "1.0.0",
   "description": "Component vue-grid with vuejs",
-  "author": "Willyam Almeida <willyamalmeida@hotmail.com>",
+  "author": {
+    "name": "willyamalmeida",
+    "email": "willyamalmeida@hotmail.com"
+  },
+  "license": "MIT",
   "main": "dist/vue-grid.js",
   "scripts": {
     "build": "rimraf ./dist && webpack --config ./webpack.config.js"
   },
-  "dependencies": {
-    "vue": "^2.5.2"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willyamalmeida/vue-grid"
   },
   "devDependencies": {
     "babel-core": "^6.22.1",
@@ -24,6 +29,7 @@
     "bootstrap": "^4.0.0-beta.3",
     "bootstrap-sass": "^3.3.7",
     "rimraf": "^2.6.0",
+    "vue": "^2.5.2",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",

@@ -5,7 +5,7 @@ A vue-grid component that shows a table grid.
 ## Installation
 
 ```html
-npm install --save-dev vue-grid
+npm install --save-dev wa-vue-grid
 ```
 
 ### Browser
