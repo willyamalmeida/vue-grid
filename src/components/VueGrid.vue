@@ -4,7 +4,7 @@
             <thead>
                 <tr>
                     <th scope="col" v-for="(col, colIndex) in config.columns" :key="colIndex">
-                        {{col.display}}
+                        {{ col.display | capitalize }}
                     </th>
                 </tr>
             </thead>
@@ -20,27 +20,41 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import Axios from "axios";
 
 export default {
     props: ["config"],
 
-    computed: {
-        ...mapState("vuegrid", {
-            rows: state => state.rows
-        }),
-
-        ...mapGetters("vuegrid", {
-            isRows: "isRows"
-        })
+    data() {
+        return {
+            rows: []
+        };
     },
 
     methods: {
-        ...mapActions("vuegrid", {
-            setList: "setList",
-            getList: "getList",
-            setConfig: "setConfig"
-        })
+        isRows() {
+            return this.rows.length > 0;
+        },
+
+        getList() {
+            let _self = this;
+
+            return new Promise((resolve, reject) => {
+                if (this.config.search) {
+                    Axios.get(this.config.search).then(res => {
+                        _self.setRows(res.data);
+                        resolve();
+                    });
+                } else {
+                    console.log("Invalid search!");
+                    resolve();
+                }
+            });
+        },
+
+        setRows(rows) {
+            this.$set(this, 'rows', rows);
+        }
     },
 
     mounted() {
@@ -48,10 +62,8 @@ export default {
             throw Error("Required config!");
         }
 
-        this.setConfig(this.config);
-
         if (this.config.rows && this.config.rows.length > 0) {
-            this.setList(this.config.rows);
+            this.setRows(this.config.rows);
         } else {
             this.getList();
         }

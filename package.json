@@ -1,6 +1,6 @@
 {
     "name": "wa-vue-grid",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "Component vue-grid with vuejs",
     "author": {
         "name": "willyamalmeida",
@@ -11,7 +11,7 @@
     "main": "dist/vue-grid.js",
     "scripts": {
         "dev": "node server",
-        "dev2": "rimraf ./dist && webpack-dev-server --config ./webpack.dev.config.js",
+        "dev2": "rimraf ./dist && webpack-dev-server --config ./webpack.dev.config.js && json-server --watch db.json",
         "build": "rimraf ./dist && cross-env NODE_ENV=production webpack --config ./webpack.prod.config.js"
     },
     "repository": {
