@@ -1,40 +1,59 @@
 {
-  "name": "wa-vue-grid",
-  "version": "1.0.0",
-  "description": "Component vue-grid with vuejs",
-  "author": {
-    "name": "willyamalmeida",
-    "email": "willyamalmeida@hotmail.com"
-  },
-  "license": "MIT",
-  "main": "dist/vue-grid.js",
-  "scripts": {
-    "build": "rimraf ./dist && webpack --config ./webpack.config.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/willyamalmeida/vue-grid"
-  },
-  "devDependencies": {
-    "babel-core": "^6.22.1",
-    "babel-helper-vue-jsx-merge-props": "^2.0.3",
-    "babel-loader": "^7.1.1",
-    "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-transform-runtime": "^6.22.0",
-    "babel-plugin-transform-vue-jsx": "^3.5.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-env": "^1.3.2",
-    "babel-preset-stage-2": "^6.22.0",
-    "babel-runtime": "^6.9.2",
-    "bootstrap": "^4.0.0-beta.3",
-    "bootstrap-sass": "^3.3.7",
-    "rimraf": "^2.6.0",
-    "vue": "^2.5.2",
-    "vue-loader": "^13.3.0",
-    "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.5.2",
-    "vuex": "^3.0.1",
-    "webpack": "^3.6.0",
-    "webpack-merge": "^4.1.0"
-  }
+    "name": "wa-vue-grid",
+    "version": "1.0.1",
+    "description": "Component vue-grid with vuejs",
+    "author": {
+        "name": "willyamalmeida",
+        "email": "willyamalmeida@hotmail.com"
+    },
+    "license": "MIT",
+    "private": false,
+    "main": "dist/vue-grid.js",
+    "scripts": {
+        "dev": "node server",
+        "dev2": "rimraf ./dist && webpack-dev-server --config ./webpack.dev.config.js",
+        "build": "rimraf ./dist && cross-env NODE_ENV=production webpack --config ./webpack.prod.config.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/willyamalmeida/vue-grid"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not ie <= 8"
+    ],
+    "dependencies": {
+        "vue": "^2.5.11"
+    },
+    "devDependencies": {
+        "axios": "^0.17.1",
+        "babel-core": "^6.26.0",
+        "babel-helper-vue-jsx-merge-props": "^2.0.3",
+        "babel-loader": "^7.1.2",
+        "babel-plugin-syntax-jsx": "^6.18.0",
+        "babel-plugin-transform-runtime": "^6.22.0",
+        "babel-plugin-transform-vue-jsx": "^3.5.0",
+        "babel-preset-env": "^1.6.0",
+        "babel-preset-es2015": "^6.9.0",
+        "babel-preset-stage-3": "^6.24.1",
+        "babel-runtime": "^6.9.2",
+        "bootstrap": "^4.0.0-beta.3",
+        "bootstrap-sass": "^3.3.7",
+        "cross-env": "^5.0.5",
+        "css-loader": "^0.28.7",
+        "file-loader": "^1.1.4",
+        "json-server": "^0.12.1",
+        "node-sass": "^4.5.3",
+        "rimraf": "^2.6.0",
+        "sass-loader": "^6.0.6",
+        "vue-loader": "^13.3.0",
+        "vue-resource": "^1.3.5",
+        "vue-style-loader": "^3.0.1",
+        "vue-template-compiler": "^2.5.2",
+        "vuex": "^3.0.1",
+        "webpack": "^3.6.0",
+        "webpack-dev-server": "^2.9.1",
+        "webpack-merge": "^4.1.0"
+    }
 }

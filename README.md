@@ -17,7 +17,7 @@ Include the script file.
 <script type="text/javascript" src="node_modules/wa-vue-grid/dist/vue-grid.min.js"></script>
 <script type="text/javascript">
   Vue.use(VueGrid);
-</script> 
+</script>
 ```
 
 ### Module
@@ -29,14 +29,16 @@ import VueGrid from 'wa-vue-grid';
 ## Usage
 
 ```html
-<vue-grid :config="myConfg"></vue-grid>
+<vue-grid :config="myConfig"></vue-grid>
 
 {
   myConfig: {
-    collumns: [
-      { name: 'Col1' },
-      { name: 'Col2' }
-    ]
+    search: 'http://mydomain:port/api'  //=> format json
+    columns: [
+      { name: 'col1', display: 'Column 1' },
+      { name: 'col2' }
+    ],
+    rows: []
   }
 }
 ```
