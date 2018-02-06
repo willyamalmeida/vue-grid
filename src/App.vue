@@ -2,6 +2,9 @@
   <div class="container">
       <h4>My grid example</h4>
       <vue-grid :config="myConfig"></vue-grid>
+      <p>
+          ...
+      </p>
   </div>
 </template>
 
@@ -17,6 +20,7 @@ export default {
         return {
             myConfig: {
                 search: "http://localhost:3000/rows",
+                pagination: true,
                 filter: true,
                 // sortProperty: "col1",
                 columns: [

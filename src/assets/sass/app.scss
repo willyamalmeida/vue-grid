@@ -1,2 +1,8 @@
+$bootstrap-sass-asset-helper: false !default;
+$icon-font-path: "../../../node_modules/bootstrap-sass/assets/fonts/bootstrap/" !default;
+$icon-font-name: "glyphicons-halflings-regular" !default;
+$icon-font-svg-id: "glyphicons_halflingsregular" !default;
+
+@import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons';
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap-sprockets";
 @import "../../../node_modules/bootstrap/scss/bootstrap";

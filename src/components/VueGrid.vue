@@ -2,16 +2,23 @@
     <div>
         <!--/////////////////////////-->
         <!--Filter-->
-        <input
-            type="text"
-            class="form-control"
-            placeholder="Enter your filter"
-            v-model="filterValue"
-            v-if="filter" />
+        <div class="vue-filter">
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Search"
+                        maxlength="100"
+                        v-model="filterValue"
+                        v-if="filter" />
+                </div>
+            </form>
+        </div>
 
         <!--/////////////////////////-->
-        <!--Grid-->
-        <table class="table table-bordered table-sm table-hover">
+        <!--Table-->
+        <table class="vue-table table table-bordered table-sm table-hover">
             <thead class="thead-light">
                 <tr>
                     <th
@@ -51,6 +58,42 @@
 
         <!--/////////////////////////-->
         <!--Pagination-->
+        <div class="vue-pagination" v-if="pagination">
+            <!--Load-->
+            <span
+                class="glyphicon glyphicon-refresh"
+                aria-hidden="true"
+                :class="{
+                    'glyphicon-refresh-animate': isLoading,
+                    cursor: !isLoading
+                }"
+                :disabled="!isLoading"
+                @click="loadRows()"></span>
+
+            <!--Total-->
+            <!-- <span class="badge badge-dark" style="float: left;">{{total}}</span> -->
+
+            <!--Pagination-->
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item active disabled"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </template>
 
@@ -64,7 +107,7 @@ export default {
     data() {
         return {
             // value default
-            isLoading: false,
+            loading: false,
             pagination: false,
             filter: false,
             filterValue: "",
@@ -86,6 +129,10 @@ export default {
             return this.rows.length > 0;
         },
 
+        isLoading() {
+            return this.loading;
+        },
+
         list() {
             let newList = this.orderBy(this.rows, this.sortProperty);
             newList = this.applyFilter(newList);
@@ -99,8 +146,11 @@ export default {
                 let _self = this;
                 let url = this.search;
 
+                this.setLoading(true);
+
                 Axios.get(url).then(res => {
                     _self.setRows(res.data);
+                    _self.setLoading(false);
                 });
             } else {
                 console.log("Invalid search!");
@@ -210,6 +260,10 @@ export default {
 
         setSortProperty(property) {
             this.$set(this, "sortProperty", property);
+        },
+
+        setLoading(loading) {
+            this.$set(this, "loading", loading);
         }
     },
 
@@ -247,19 +301,19 @@ export default {
 
 <style src="./../assets/sass/app.scss" lang="sass"></style>
 <style>
-label {
+.vue-table label {
     display: inherit;
 }
 
-th > label.active {
+.vue-table th > label.active {
     color: #0b0c21;
 }
 
-th > label.active > span .arrow {
+.vue-table th > label.active > span .arrow {
     opacity: 1;
 }
 
-.arrow {
+.vue-table .arrow {
     display: inline-block;
     vertical-align: middle;
     width: 0;
@@ -268,15 +322,61 @@ th > label.active > span .arrow {
     opacity: 0.66;
 }
 
-.arrow.asc {
+.vue-table .arrow.asc {
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     border-bottom: 4px solid #000;
 }
 
-.arrow.desc {
+.vue-table .arrow.desc {
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     border-top: 4px solid #000;
+}
+
+.vue-filter {
+    background-color: #e9ecef;
+    margin-bottom: -15px;
+    padding: 5px;
+}
+
+.vue-pagination {
+    background-color: #e9ecef;
+    margin-top: -16px;
+}
+
+.vue-pagination .glyphicon.glyphicon-refresh.cursor {
+    cursor: pointer;
+}
+
+.vue-pagination .glyphicon.glyphicon-refresh {
+    float: left;
+    padding: 5px;
+}
+
+.vue-pagination .glyphicon-refresh-animate {
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
 }
 </style>
