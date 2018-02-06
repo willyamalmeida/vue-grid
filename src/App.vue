@@ -6,22 +6,24 @@
 </template>
 
 <script>
-import VueGrid from './components/VueGrid.vue';
+import VueGrid from "./components/VueGrid.vue";
 
 export default {
-    name: 'app',
+    name: "app",
     components: {
         VueGrid
     },
     data() {
         return {
             myConfig: {
-                search: 'http://localhost:3000/rows',
+                search: "http://localhost:3000/rows",
+                filter: true,
+                // sortProperty: "col1",
                 columns: [
-                    { name: 'col1', display: 'column1' },
-                    { name: 'col2', display: 'column2' }
+                    { name: "col1", display: "column1", sort: true },
+                    { name: "col2", display: "column2", sort: true }
                 ],
-                rows: [],
+                rows: []
                 // rows: [
                 //     { col1: 'xxx xxxx', col2: 'xxx@dddd.ddd' },
                 //     { col1: 'yyy yyyy', col2: 'yyy@yyy.yyy' }

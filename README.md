@@ -33,10 +33,12 @@ import VueGrid from 'wa-vue-grid';
 
 {
   myConfig: {
-    search: 'http://mydomain:port/api'  //=> format json
+    search: "http://mydomain:port/api",  //=> format json
+    filter: true,
+    sortProperty: "col1",
     columns: [
-      { name: 'col1', display: 'Column 1' },
-      { name: 'col2' }
+      { name: "col1", display: "Column 1", sort: true },
+      { name: "col2", display: "Column 2" }
     ],
     rows: []
   }
