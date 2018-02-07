@@ -2,7 +2,7 @@
     <div>
         <!--/////////////////////////-->
         <!--Filter-->
-        <div class="vue-filter">
+        <div class="vue-filter" v-if="filter">
             <form class="navbar-form navbar-left">
                 <div class="form-group">
                     <input
@@ -10,8 +10,7 @@
                         class="form-control form-control-sm"
                         placeholder="Search"
                         maxlength="100"
-                        v-model="filterValue"
-                        v-if="filter" />
+                        v-model="filterValue"/>
                 </div>
             </form>
         </div>
@@ -58,7 +57,7 @@
 
         <!--/////////////////////////-->
         <!--Pagination-->
-        <div class="vue-pagination" v-if="pagination">
+        <div class="vue-pagination" v-if="pagination.enabled">
             <!--Load-->
             <span
                 class="glyphicon glyphicon-refresh"
@@ -76,16 +75,23 @@
             <!--Pagination-->
             <nav aria-label="Page navigation">
                 <ul class="pagination pagination-sm justify-content-end">
-                    <li class="page-item disabled">
+                    <li class="page-item"
+                        :class="{ disabled: pagination.currentPage === 1 }"
+                        @click="pagination.currentPage === 1 ? $event.preventDefault() : navigate($event, (pagination.currentPage - 1))">
                         <a class="page-link" href="#" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                             <span class="sr-only">Previous</span>
                         </a>
                     </li>
-                    <li class="page-item active disabled"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
+                    <li class="page-item"
+                        :class="{ active: pagination.currentPage === page }"
+                        v-for="page in pages" :key="page"
+                        @click="navigate($event, page)">
+                        <a class="page-link" href="#">{{page}}</a>
+                    </li>
+                    <li class="page-item"
+                       :class="{ disabled: pagination.currentPage === pages.length }"
+                       @click="pagination.currentPage === pages.length ? $event.preventDefault() : navigate($event, (pagination.currentPage + 1))">
                         <a class="page-link" href="#" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>
@@ -99,7 +105,7 @@
 
 <script>
 import Axios from "axios";
-import { orderBy, isEmpty } from "lodash";
+import { orderBy, isEmpty, range } from "lodash";
 
 export default {
     props: ["config"],
@@ -108,13 +114,15 @@ export default {
         return {
             // value default
             loading: false,
-            pagination: false,
             filter: false,
             filterValue: "",
             search: "",
             rows: [],
-            currentPage: 1,
-            page: 10,
+            pagination: {
+                enabled: false,
+                currentPage: 1,
+                maxPage: 10
+            },
             sortProperty: null,
             sortOrders: []
         };
@@ -134,9 +142,26 @@ export default {
         },
 
         list() {
-            let newList = this.orderBy(this.rows, this.sortProperty);
-            newList = this.applyFilter(newList);
-            return newList;
+            let list = this.applyOrderBy(this.rows, this.sortProperty);
+            list = this.applyFilter(list);
+
+            //temp...will modified
+            // let newList = [];
+            // let initIndex = (this.pagination.currentPage * this.pagination.maxPage) - this.pagination.maxPage;
+            // let maxIndex = this.pagination.currentPage * this.pagination.maxPage;
+            // for (let index = initIndex; index < maxIndex - 1; index++) {
+            //     newList.push(list[index]);
+            // };
+            //end temp...
+
+            //return newList;
+
+            return list;
+        },
+
+        pages() {
+            let pages = _.range(1, Math.trunc(this.total / this.pagination.maxPage) + 1);
+            return pages;
         }
     },
 
@@ -157,7 +182,7 @@ export default {
             }
         },
 
-        orderBy(rows, property) {
+        applyOrderBy(rows, property) {
             let newList = rows;
 
             if (!_.isEmpty(property)) {
@@ -234,12 +259,24 @@ export default {
             return list;
         },
 
+        navigate(e, page) {
+            e.preventDefault();
+            this.setCurrentPage(page);
+        },
+
+        setCurrentPage(page) {
+            this.$set(this.pagination, "currentPage", page);
+        },
+
         setConfig(config) {
             this.$set(this, "search", config.search);
-            this.$set(this, "pagination", config.pagination);
             this.$set(this, "filter", config.filter);
-            this.$set(this, "page", config.page);
             this.$set(this, "sortProperty", config.sortProperty);
+
+            if(config.pagination) {
+                this.$set(this.pagination, "enabled", config.pagination.enabled);
+                this.$set(this.pagination, "maxPage", config.pagination.maxPage);
+            }
 
             let sortOrders = [];
             _.forEach(this.config.columns, function(col) {

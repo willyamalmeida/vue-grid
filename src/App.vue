@@ -20,7 +20,11 @@ export default {
         return {
             myConfig: {
                 search: "http://localhost:3000/rows",
-                pagination: true,
+                // pagination: {},
+                pagination: {
+                    enabled: true,
+                    maxPage: 10
+                },
                 filter: true,
                 // sortProperty: "col1",
                 columns: [
