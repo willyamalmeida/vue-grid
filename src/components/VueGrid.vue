@@ -83,15 +83,20 @@
                             <span class="sr-only">Previous</span>
                         </a>
                     </li>
+
                     <li class="page-item"
                         :class="{ active: pagination.currentPage === page }"
-                        v-for="page in pages" :key="page"
-                        @click="navigate($event, page)">
-                        <a class="page-link" href="#">{{page}}</a>
+                        v-for="(page, pageIndex) in pages"
+                        :key="pageIndex"
+                        @click="page == '...' ? $event.preventDefault() : navigate($event, page)">
+
+                        <span v-if="page == '...'" class="page-link" :class="{ disabled: page == '...' }">{{page}}</span>
+                        <a v-if="page != '...'" class="page-link" href="#">{{page}}</a>
                     </li>
+
                     <li class="page-item"
-                       :class="{ disabled: pagination.currentPage === pages.length }"
-                       @click="pagination.currentPage === pages.length ? $event.preventDefault() : navigate($event, (pagination.currentPage + 1))">
+                       :class="{ disabled: pagination.currentPage === totalPages }"
+                       @click="pagination.currentPage === totalPages ? $event.preventDefault() : navigate($event, (pagination.currentPage + 1))">
                         <a class="page-link" href="#" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>
@@ -118,10 +123,14 @@ export default {
             filterValue: "",
             search: "",
             rows: [],
+            total: 0,
             pagination: {
                 enabled: false,
                 currentPage: 1,
-                maxPage: 10
+                maxPage: 10,
+                rangePage: 8,
+                pageStart: null,
+                pageEnd: null
             },
             sortProperty: null,
             sortOrders: []
@@ -129,10 +138,6 @@ export default {
     },
 
     computed: {
-        total() {
-            return this.rows.length;
-        },
-
         isRows() {
             return this.rows.length > 0;
         },
@@ -159,8 +164,14 @@ export default {
             return list;
         },
 
+        totalPages() {
+            let totalPages = Math.trunc(this.total / this.pagination.maxPage);
+            return totalPages;
+        },
+
         pages() {
-            let pages = _.range(1, Math.trunc(this.total / this.pagination.maxPage) + 1);
+            //let pages = _.range(1, this.totalPages + 1);
+            let pages = this.generatePagesArray(this.pagination.currentPage, this.total, this.pagination.maxPage, this.pagination.rangePage);
             return pages;
         }
     },
@@ -168,12 +179,22 @@ export default {
     methods: {
         loadRows() {
             if (this.search) {
+                this.setLoading(true);
+
                 let _self = this;
                 let url = this.search;
 
-                this.setLoading(true);
+                if (this.pagination.enabled) {
+                    url += `?${this.pagination.pageStart}=${this.pagination.currentPage}&`;
+                    url += `${this.pagination.pageEnd}=${this.pagination.maxPage}`;
+                }
 
                 Axios.get(url).then(res => {
+                     if (_self.pagination.enabled) {
+                         let total = parseInt(res.headers["x-total-count"]);
+                        _self.setTotal(total);
+                     }
+
                     _self.setRows(res.data);
                     _self.setLoading(false);
                 });
@@ -259,9 +280,61 @@ export default {
             return list;
         },
 
+        generatePagesArray(currentPage, collectionLength, rowsPerPage, paginationRange)
+        {
+            var pages = [];
+            var totalPages = Math.ceil(collectionLength / rowsPerPage);
+            var halfWay = Math.ceil(paginationRange / 2);
+            var position;
+
+            if (currentPage <= halfWay) {
+                position = 'start';
+            } else if (totalPages - halfWay < currentPage) {
+                position = 'end';
+            } else {
+                position = 'middle';
+            }
+
+            var ellipsesNeeded = paginationRange < totalPages;
+            var i = 1;
+            while (i <= totalPages && i <= paginationRange) {
+                var pageNumber = this.calculatePageNumber(i, currentPage, paginationRange, totalPages);
+                var openingEllipsesNeeded = (i === 2 && (position === 'middle' || position === 'end'));
+                var closingEllipsesNeeded = (i === paginationRange - 1 && (position === 'middle' || position === 'start'));
+                if (ellipsesNeeded && (openingEllipsesNeeded || closingEllipsesNeeded)) {
+                    pages.push('...');
+                } else {
+                    pages.push(pageNumber);
+                }
+                i ++;
+            }
+            return pages;
+        },
+
+        calculatePageNumber(i, currentPage, paginationRange, totalPages)
+        {
+            var halfWay = Math.ceil(paginationRange/2);
+            if (i === paginationRange) {
+                return totalPages;
+            } else if (i === 1) {
+                return i;
+            } else if (paginationRange < totalPages) {
+                if (totalPages - halfWay < currentPage) {
+                return totalPages - paginationRange + i;
+            } else if (halfWay < currentPage) {
+                return currentPage - halfWay + i;
+            } else {
+                return i;
+            }
+            } else {
+                return i;
+            }
+        },
+
         navigate(e, page) {
             e.preventDefault();
             this.setCurrentPage(page);
+            this.loadRows();
         },
 
         setCurrentPage(page) {
@@ -274,8 +347,25 @@ export default {
             this.$set(this, "sortProperty", config.sortProperty);
 
             if(config.pagination) {
-                this.$set(this.pagination, "enabled", config.pagination.enabled);
-                this.$set(this.pagination, "maxPage", config.pagination.maxPage);
+                if (config.pagination.enabled) {
+                    this.$set(this.pagination, "enabled", config.pagination.enabled);
+                }
+
+                if (config.pagination.maxPage) {
+                    this.$set(this.pagination, "maxPage", config.pagination.maxPage);
+                }
+
+                if (config.pagination.rangePage) {
+                    this.$set(this.pagination, "rangePage", config.pagination.rangePage);
+                }
+
+                if (config.pagination.pageStart) {
+                    this.$set(this.pagination, "pageStart", config.pagination.pageStart);
+                }
+
+                if (config.pagination.pageEnd) {
+                    this.$set(this.pagination, "pageEnd", config.pagination.pageEnd);
+                }
             }
 
             let sortOrders = [];
@@ -289,6 +379,10 @@ export default {
             });
 
             this.$set(this, "sortOrders", sortOrders);
+        },
+
+        setTotal(total) {
+            this.$set(this, "total", total);
         },
 
         setRows(rows) {
@@ -339,81 +433,81 @@ export default {
 <style src="./../assets/sass/app.scss" lang="sass"></style>
 <style>
 .vue-table label {
-    display: inherit;
+  display: inherit;
 }
 
 .vue-table th > label.active {
-    color: #0b0c21;
+  color: #0b0c21;
 }
 
 .vue-table th > label.active > span .arrow {
-    opacity: 1;
+  opacity: 1;
 }
 
 .vue-table .arrow {
-    display: inline-block;
-    vertical-align: middle;
-    width: 0;
-    height: 0;
-    margin-left: 5px;
-    opacity: 0.66;
+  display: inline-block;
+  vertical-align: middle;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  opacity: 0.66;
 }
 
 .vue-table .arrow.asc {
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 4px solid #000;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #000;
 }
 
 .vue-table .arrow.desc {
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 4px solid #000;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #000;
 }
 
 .vue-filter {
-    background-color: #e9ecef;
-    margin-bottom: -15px;
-    padding: 5px;
+  background-color: #e9ecef;
+  margin-bottom: -15px;
+  padding: 5px;
 }
 
 .vue-pagination {
-    background-color: #e9ecef;
-    margin-top: -16px;
+  background-color: #e9ecef;
+  margin-top: -16px;
 }
 
 .vue-pagination .glyphicon.glyphicon-refresh.cursor {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .vue-pagination .glyphicon.glyphicon-refresh {
-    float: left;
-    padding: 5px;
+  float: left;
+  padding: 5px;
 }
 
 .vue-pagination .glyphicon-refresh-animate {
-    -webkit-animation: spin 1000ms infinite linear;
-    animation: spin 1000ms infinite linear;
+  -webkit-animation: spin 1000ms infinite linear;
+  animation: spin 1000ms infinite linear;
 }
 
 @-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 @keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 </style>

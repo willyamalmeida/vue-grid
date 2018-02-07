@@ -34,6 +34,13 @@ import VueGrid from 'wa-vue-grid';
 {
   myConfig: {
     search: "http://mydomain:port/api",  //=> format json
+    pagination: {
+        enabled: true,
+        maxPage: 10,
+        rangePage: 8,
+        pageStart: "_page", //ex: "http://localhost:3000/rows?_page=1&_limit=10"
+        pageEnd: "_limit"
+    },
     filter: true,
     sortProperty: "col1",
     columns: [

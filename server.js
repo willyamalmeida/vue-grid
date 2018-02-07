@@ -16,7 +16,6 @@ const router = jsonServer.router("db.json");
 const middlewares = jsonServer.defaults();
 
 api.use(middlewares);
-api.use(jsonServer.bodyParser);
 api.use(router);
 
 api.listen(3000, function() {

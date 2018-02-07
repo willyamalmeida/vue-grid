@@ -23,7 +23,10 @@ export default {
                 // pagination: {},
                 pagination: {
                     enabled: true,
-                    maxPage: 10
+                    maxPage: 10,
+                    rangePage: 8,
+                    pageStart: "_page", //ex: "http://localhost:3000/rows?_page=1&_limit=10"
+                    pageEnd: "_limit"
                 },
                 filter: true,
                 // sortProperty: "col1",
