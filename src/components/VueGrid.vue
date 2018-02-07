@@ -3,21 +3,12 @@
         <!--/////////////////////////-->
         <!--Filter-->
         <div class="vue-filter" v-if="filter">
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                    <input
-                        type="text"
-                        class="form-control form-control-sm"
-                        placeholder="Search"
-                        maxlength="100"
-                        v-model="filterValue"/>
-                </div>
-            </form>
+            <vue-filter v-model="filterValue" />
         </div>
 
         <!--/////////////////////////-->
         <!--Table-->
-        <table class="vue-table table table-bordered table-sm table-hover">
+        <table class="vue-table table table-sm table-bordered table-hover">
             <thead class="thead-light">
                 <tr>
                     <th
@@ -110,10 +101,15 @@
 
 <script>
 import Axios from "axios";
-import { orderBy, isEmpty, range } from "lodash";
+import _ from "lodash";
+import VueFilter from "./VueFilter";
 
 export default {
     props: ["config"],
+
+    components: {
+        VueFilter
+    },
 
     data() {
         return {
@@ -150,17 +146,6 @@ export default {
             let list = this.applyOrderBy(this.rows, this.sortProperty);
             list = this.applyFilter(list);
 
-            //temp...will modified
-            // let newList = [];
-            // let initIndex = (this.pagination.currentPage * this.pagination.maxPage) - this.pagination.maxPage;
-            // let maxIndex = this.pagination.currentPage * this.pagination.maxPage;
-            // for (let index = initIndex; index < maxIndex - 1; index++) {
-            //     newList.push(list[index]);
-            // };
-            //end temp...
-
-            //return newList;
-
             return list;
         },
 
@@ -193,6 +178,8 @@ export default {
                      if (_self.pagination.enabled) {
                          let total = parseInt(res.headers["x-total-count"]);
                         _self.setTotal(total);
+                     } else {
+                       _self.setTotal(res.data.length);
                      }
 
                     _self.setRows(res.data);
@@ -266,14 +253,17 @@ export default {
         applyFilter(list) {
             if (!_.isEmpty(this.filterValue)) {
                 let _columns = this.config.columns;
-                let _filter = this.filterValue;
+                let _filter = this.filterValue.toLowerCase();
 
                 return _.filter(list, x => {
-                    let values = _.find(_columns, function(col) {
-                        return x[col.name].indexOf(_filter) >= 0;
+                    let contained = _.some(_columns, col => {
+                        let value = x[col.name].toLowerCase();
+                        let isInclude = value.includes(_filter);
+
+                        return isInclude;
                     });
 
-                    return values != null;
+                    return contained;
                 });
             }
 
@@ -346,10 +336,8 @@ export default {
             this.$set(this, "filter", config.filter);
             this.$set(this, "sortProperty", config.sortProperty);
 
-            if(config.pagination) {
-                if (config.pagination.enabled) {
-                    this.$set(this.pagination, "enabled", config.pagination.enabled);
-                }
+            if(config.pagination && config.pagination.enabled) {
+                this.$set(this.pagination, "enabled", config.pagination.enabled);
 
                 if (config.pagination.maxPage) {
                     this.$set(this.pagination, "maxPage", config.pagination.maxPage);
@@ -368,15 +356,11 @@ export default {
                 }
             }
 
-            let sortOrders = [];
-            _.forEach(this.config.columns, function(col) {
-                if (col.sort) {
-                    let strOrder = `{"${col.name}": 0}`;
-                    let objOrder = JSON.parse(strOrder);
-
-                    sortOrders.push(objOrder);
-                }
-            });
+            let columnsSort = _.filter(this.config.columns, x => { return x.sort; });
+            let sortOrders = _.reduce(columnsSort, (result, col) => {
+                result.push({ [col.name]: 0 });
+                return result;
+            }, []);
 
             this.$set(this, "sortOrders", sortOrders);
         },
