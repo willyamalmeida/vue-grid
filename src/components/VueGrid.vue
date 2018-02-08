@@ -103,6 +103,7 @@
 import Axios from "axios";
 import _ from "lodash";
 import VueFilter from "./VueFilter";
+import parserLink from "./../utils/parserLink";
 
 export default {
     props: ["config"],
@@ -123,10 +124,14 @@ export default {
             pagination: {
                 enabled: false,
                 currentPage: 1,
-                maxPage: 10,
+                perPage: 10,
                 rangePage: 8,
                 pageStart: null,
-                pageEnd: null
+                pageEnd: null,
+                search: {
+                    page: null,
+                    perPage: null
+                }
             },
             sortProperty: null,
             sortOrders: []
@@ -150,13 +155,12 @@ export default {
         },
 
         totalPages() {
-            let totalPages = Math.trunc(this.total / this.pagination.maxPage);
+            let totalPages = Math.trunc(this.total / this.pagination.perPage);
             return totalPages;
         },
 
         pages() {
-            //let pages = _.range(1, this.totalPages + 1);
-            let pages = this.generatePagesArray(this.pagination.currentPage, this.total, this.pagination.maxPage, this.pagination.rangePage);
+            let pages = this.generatePagesArray(this.pagination.currentPage, this.total, this.pagination.perPage, this.pagination.rangePage);
             return pages;
         }
     },
@@ -170,14 +174,22 @@ export default {
                 let url = this.search;
 
                 if (this.pagination.enabled) {
-                    url += `?${this.pagination.pageStart}=${this.pagination.currentPage}&`;
-                    url += `${this.pagination.pageEnd}=${this.pagination.maxPage}`;
+                    if (this.pagination.search) {
+                        url += `?${this.pagination.search.page}=${this.pagination.currentPage}&`;
+                        url += `${this.pagination.search.perPage}=${this.pagination.perPage}`;
+                    } else {
+                        throw("Invalid search pagination!");
+                    }
                 }
 
                 Axios.get(url).then(res => {
                      if (_self.pagination.enabled) {
-                         let total = parseInt(res.headers["x-total-count"]);
-                        _self.setTotal(total);
+                         if (!res.headers["link"]){
+                             throw("Not implementation response headers link for pagination!");
+                         }
+
+                         let total = _self.getTotalLink(res.headers["link"], _self.pagination.search);
+                         _self.setTotal(total);
                      } else {
                        _self.setTotal(res.data.length);
                      }
@@ -188,6 +200,13 @@ export default {
             } else {
                 console.log("Invalid search!");
             }
+        },
+
+        getTotalLink(link, searchPagination) {
+            let data = parserLink(link, searchPagination.page, searchPagination.perPage);
+            let total = data.last.page * data.last.perPage;
+
+            return total;
         },
 
         applyOrderBy(rows, property) {
@@ -339,20 +358,22 @@ export default {
             if(config.pagination && config.pagination.enabled) {
                 this.$set(this.pagination, "enabled", config.pagination.enabled);
 
-                if (config.pagination.maxPage) {
-                    this.$set(this.pagination, "maxPage", config.pagination.maxPage);
+                if (config.pagination.perPage) {
+                    this.$set(this.pagination, "perPage", config.pagination.perPage);
                 }
 
                 if (config.pagination.rangePage) {
                     this.$set(this.pagination, "rangePage", config.pagination.rangePage);
                 }
 
-                if (config.pagination.pageStart) {
-                    this.$set(this.pagination, "pageStart", config.pagination.pageStart);
-                }
+                if (config.pagination.search) {
+                    if (config.pagination.search.page) {
+                        this.$set(this.pagination.search, "page", config.pagination.search.page);
+                    }
 
-                if (config.pagination.pageEnd) {
-                    this.$set(this.pagination, "pageEnd", config.pagination.pageEnd);
+                    if (config.pagination.search.perPage) {
+                        this.$set(this.pagination.search, "perPage", config.pagination.search.perPage);
+                    }
                 }
             }
 
