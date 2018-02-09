@@ -1,0 +1,28 @@
+{
+    "rootDir": "./",
+    "coverageDirectory": "<rootDir>/test/coverage/",
+    "collectCoverage": true,
+    "coverageReporters": [
+        "html",
+        "text-summary"
+    ],
+    "coverageThreshold": {
+        "global": {
+            "branches": 0,
+            "functions": 0,
+            "lines": 0,
+            "statements": 0
+        }
+    },
+    "moduleFileExtensions": [
+        "js",
+        "vue"
+    ],
+    "transform": {
+        "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+        ".*\\.(vue)$": "<rootDir>/node_modules/jest-vue-preprocessor"
+    },
+    "snapshotSerializers": [
+        "<rootDir>/node_modules/jest-serializer-vue"
+    ]
+}

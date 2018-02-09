@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VueFilter test VueFilter html structure 1`] = `
+<form
+  class="navbar-form navbar-left"
+>
+  <div
+    class="form-group"
+  >
+    <input
+      class="form-control form-control-sm"
+      maxlength="100"
+      placeholder="Search"
+      type="text"
+    />
+  </div>
+</form>
+`;
