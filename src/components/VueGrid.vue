@@ -103,7 +103,7 @@
 import Axios from "axios";
 import _ from "lodash";
 import VueFilter from "./VueFilter";
-import parserLink from "./../utils/parserLink";
+import parserLink from "./../libs/parserLink";
 
 export default {
     props: ["config"],
