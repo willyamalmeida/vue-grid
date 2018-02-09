@@ -2,11 +2,7 @@
 
 A vue-grid component that shows a table grid.
 
-[![Build Status](https://travis-ci.org/willyamalmeida/vue-grid.svg?branch=master)](https://travis-ci.org/willyamalmeida/vue-grid)
-
-[![codecov](https://codecov.io/gh/willyamalmeida/vue-grid/branch/master/graph/badge.svg)](https://codecov.io/gh/willyamalmeida/vue-grid)
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/8b7ae9e3cf0820a1ef3e/maintainability)](https://codeclimate.com/github/willyamalmeida/vue-grid/maintainability)
+[![Build Status](https://travis-ci.org/willyamalmeida/vue-grid.svg?branch=master)](https://travis-ci.org/willyamalmeida/vue-grid) [![codecov](https://codecov.io/gh/willyamalmeida/vue-grid/branch/master/graph/badge.svg)](https://codecov.io/gh/willyamalmeida/vue-grid) [![Maintainability](https://api.codeclimate.com/v1/badges/8b7ae9e3cf0820a1ef3e/maintainability)](https://codeclimate.com/github/willyamalmeida/vue-grid/maintainability)
 
 ## Installation
 
@@ -42,10 +38,12 @@ import VueGrid from 'wa-vue-grid';
     search: "http://mydomain:port/api",  //=> format json
     pagination: {
         enabled: true,
-        maxPage: 10,
+        perPage: 10,
         rangePage: 8,
-        pageStart: "_page", //ex: "http://mydomain:port/api?_page=1&_limit=10"
-        pageEnd: "_limit"
+        search: {
+            page: "_page", //ex: "http://mydomain:port/api?_page=1&_limit=10"
+            perPage: "_limit"
+        }
     },
     filter: true,
     sortProperty: "col1",

@@ -4,4 +4,4 @@ node_js:
   - "9.3.0"
 
 after_success:
-  - codecov
+  - bash <(curl -s https://codecov.io/bash)
