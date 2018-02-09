@@ -1,6 +1,6 @@
 {
     "rootDir": "./",
-    "coverageDirectory": "<rootDir>/test/coverage/",
+    "coverageDirectory": "<rootDir>/coverage/",
     "collectCoverage": true,
     "coverageReporters": [
         "html",
