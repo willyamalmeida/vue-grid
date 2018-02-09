@@ -6,6 +6,8 @@ A vue-grid component that shows a table grid.
 
 [![codecov](https://codecov.io/gh/willyamalmeida/vue-grid/branch/master/graph/badge.svg)](https://codecov.io/gh/willyamalmeida/vue-grid)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/8b7ae9e3cf0820a1ef3e/maintainability)](https://codeclimate.com/github/willyamalmeida/vue-grid/maintainability)
+
 ## Installation
 
 ```html
