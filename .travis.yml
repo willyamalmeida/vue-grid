@@ -4,4 +4,4 @@ node_js:
   - "9.3.0"
 
 after_success:
-  - cross-env NODE_ENV=production jest --config ./jest.conf.json
+  - cross-env NODE_ENV=production jest --config ./jest.conf.json && codecov
