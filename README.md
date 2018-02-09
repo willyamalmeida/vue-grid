@@ -4,6 +4,8 @@ A vue-grid component that shows a table grid.
 
 [![Build Status](https://travis-ci.org/willyamalmeida/vue-grid.svg?branch=master)](https://travis-ci.org/willyamalmeida/vue-grid)
 
+[![codecov](https://codecov.io/gh/willyamalmeida/vue-grid/branch/master/graph/badge.svg)](https://codecov.io/gh/willyamalmeida/vue-grid)
+
 ## Installation
 
 ```html
