@@ -103,7 +103,7 @@
 import Axios from "axios";
 import _ from "lodash";
 import VueFilter from "./VueFilter";
-import parserLink from "./../libs/parserLink";
+import parserLink from "pagination-link-parser";
 
 export default {
     props: ["config"],
